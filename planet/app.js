@@ -3,42 +3,36 @@ var InitDemo = function () {
 		if (vsErr) {
 			alert('Fatal error getting vertex shader (see console)');
 			console.error(vsErr);
-		} 
-		else {
+		} else {
 			loadTextResource('./shader.fs.glsl', function (fsErr, fsText) {
 				if (fsErr) {
 					alert('Fatal error getting fragment shader (see console)');
 					console.error(fsErr);
-				} 
-				else {
-					loadJSONResource('./planet.json', function (modelErr, modelObj) {
+				} else {
+					loadJSONResource('./Susan.json', function (modelErr, modelObj) {
 						if (modelErr) {
 							alert('Fatal error getting Susan model (see console)');
-							console.error(modelErr);
-						} 
-						else {
-								loadImage('./SusanTexture.png', function (imgErr, img) {
-									if (imgErr) {
-											alert('Fatal error getting Susan texture (see console)');
-											console.error(imgErr);
-									} 
-									else { 
-											RunDemo(vsText, fsText, img, modelObj, modelObj2);
-									}
-									});
-
+							console.error(fsErr);
+						} else {
+							loadImage('./SusanTexture.png', function (imgErr, img) {
+								if (imgErr) {
+									alert('Fatal error getting Susan texture (see console)');
+									console.error(imgErr);
+								} else { 
+									RunDemo(vsText, fsText, img, modelObj);
 								}
 							});
 						}
 					});
 				}
 			});
+		}
+	});
 };
 
-var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanModel, SusanModel2) {
+var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanModel) {
 	console.log('This is working');
 	model = SusanModel;
-	model2 = SusanModel2;
 
 	var canvas = document.getElementById('game-surface');
 	var gl = canvas.getContext('webgl');
@@ -153,78 +147,6 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
 	);
 	gl.enableVertexAttribArray(normalAttribLocation);
 
-
-
-
-	// new
-	//
-	// Create buffer 2
-	//
-	var susanVertices2 = SusanModel2.meshes[0].vertices;
-	// var susanIndices2 = [].concat.apply([], SusanModel2.meshes[0].faces);
-	var susanTexCoords2 = SusanModel2.meshes[0].texturecoords[0];
-	var susanNormals2 = SusanModel2.meshes[0].normals;
-
-	var susanPosVertexBufferObject2 = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanPosVertexBufferObject2);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanVertices2), gl.STATIC_DRAW);
-
-	var susanTexCoordVertexBufferObject2 = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject2);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords2), gl.STATIC_DRAW);
-
-	// var susanIndexBufferObject2 = gl.createBuffer();
-	// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, susanIndexBufferObject2);
-	// gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(susanIndices2), gl.STATIC_DRAW);
-
-	var susanNormalBufferObject2 = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanNormalBufferObject2);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanNormals2), gl.STATIC_DRAW);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanPosVertexBufferObject2);
-	var positionAttribLocation2 = gl.getAttribLocation(program, 'vertPosition2');
-	gl.vertexAttribPointer(
-		positionAttribLocation2, // Attribute location
-		3, // Number of elements per attribute
-		gl.FLOAT, // Type of elements
-		gl.FALSE,
-		3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-		0 // Offset from the beginning of a single vertex to this attribute
-	);
-	gl.enableVertexAttribArray(positionAttribLocation2);
-
-	// gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject2);
-	// var texCoordAttribLocation2 = gl.getAttribLocation(program, 'vertTexCoord2');
-	// gl.vertexAttribPointer(
-	// 	texCoordAttribLocation2, // Attribute location
-	// 	2, // Number of elements per attribute
-	// 	gl.FLOAT, // Type of elements
-	// 	gl.FALSE,
-	// 	2 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-	// 	0
-	// );
-	// gl.enableVertexAttribArray(texCoordAttribLocation2);
-
-	// gl.bindBuffer(gl.ARRAY_BUFFER, susanNormalBufferObject2);
-	// var normalAttribLocation2 = gl.getAttribLocation(program, 'vertNormal2');
-	// gl.vertexAttribPointer(
-	// 	normalAttribLocation2,
-	// 	3, gl.FLOAT,
-	// 	gl.TRUE,
-	// 	3 * Float32Array.BYTES_PER_ELEMENT,
-	// 	0
-	// );
-	// gl.enableVertexAttribArray(normalAttribLocation2);
-
-
-
-
-
-
-
-
-
-
 	//
 	// Create texture
 	//
@@ -262,8 +184,6 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
 
 	var xRotationMatrix = new Float32Array(16);
 	var yRotationMatrix = new Float32Array(16);
-	var yTranslateMatrix = new Float32Array(16);
-	var zRotationMatrix = new Float32Array(16); // get closer
 
 	//
 	// Lighting information
@@ -285,13 +205,10 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
 	glMatrix.mat4.identity(identityMatrix);
 	var angle = 0;
 	var loop = function () {
-		//angle = performance.now() / 1000 / 6 * 2 * Math.PI;
-		// angle = 180;
-		glMatrix.mat4.rotate(yRotationMatrix, identityMatrix, 135, [0, 1, 0]);
-		glMatrix.mat4.rotate(xRotationMatrix, identityMatrix, 0, [1, 0, 0]);
-		glMatrix.mat4.translate(zRotationMatrix, identityMatrix, [0,0,-7])
-		glMatrix.mat4.translate(yTranslateMatrix, yRotationMatrix, [0,-0.2,0])
-		glMatrix.mat4.mul(worldMatrix, zRotationMatrix, yTranslateMatrix, xRotationMatrix);
+		angle = performance.now() / 1000 / 6 * 2 * Math.PI;
+		glMatrix.mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
+		glMatrix.mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
+		glMatrix.mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
 		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
 		gl.clearColor(0.75, 0.85, 0.8, 1.0);
