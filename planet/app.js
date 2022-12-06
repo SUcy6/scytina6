@@ -9,7 +9,7 @@ var InitDemo = function () {
 					alert('Fatal error getting fragment shader (see console)');
 					console.error(fsErr);
 				} else {
-					loadJSONResource('./Susan.json', function (modelErr, modelObj) {
+					loadJSONResource('./planet.json', function (modelErr, modelObj) {
 						if (modelErr) {
 							alert('Fatal error getting Susan model (see console)');
 							console.error(fsErr);
