@@ -33,7 +33,6 @@ var InitDemo = function () {
 					});
 				}
 			});
-
 };
 
 var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanModel, SusanModel2) {
